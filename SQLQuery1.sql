@@ -114,4 +114,33 @@ SET SoldAsVacant = CASE WHEN SoldAsVacant = 'Y' THEN 'Yes'
 	   END
 
 
--- Remove Duplicates
+-- Remove Duplicates CTE
+WITH RowNumCTE AS(
+
+SELECT *,
+	ROW_NUMBER() OVER(
+	PARTITION BY 
+	ParcelID, PropertyAddress, SalePrice, SaleDate, LegalReference
+	ORDER BY UniqueID) as row_num
+
+
+FROM PortfolioProject..NashvilleHousing
+
+)
+--DELETE 
+--FROM RowNumCTE
+--WHERE row_num>1
+SELECT *
+FROM RowNumCTE
+WHERE row_num>1
+
+-- delete unused columns
+
+SELECT *
+FROM PortfolioProject..NashvilleHousing
+
+ALTER TABLE PortfolioProject..NashvilleHousing
+DROP COLUMN OwnerAddress, TaxDistrict, PropertyAddress
+
+ALTER TABLE PortfolioProject..NashvilleHousing
+DROP COLUMN SaleDate
